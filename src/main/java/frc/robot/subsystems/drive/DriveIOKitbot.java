@@ -30,8 +30,6 @@ import java.util.function.DoubleSupplier;
 public class DriveIOKitbot implements DriveIO {
   private final SparkMax leftLeader = new SparkMax(leftLeaderCanId, MotorType.kBrushless);
   private final SparkMax rightLeader = new SparkMax(rightLeaderCanId, MotorType.kBrushless);
-  private final SparkMax leftFollower = new SparkMax(leftFollowerCanId, MotorType.kBrushless);
-  private final SparkMax rightFollower = new SparkMax(rightFollowerCanId, MotorType.kBrushless);
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
   private final SparkClosedLoopController leftController = leftLeader.getClosedLoopController();
@@ -65,22 +63,6 @@ public class DriveIOKitbot implements DriveIO {
         () ->
             rightLeader.configure(
                 config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-
-    // Apply config to followers
-    config.inverted(leftInverted).follow(leftLeader);
-    tryUntilOk(
-        leftFollower,
-        5,
-        () ->
-            leftFollower.configure(
-                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-    config.inverted(rightInverted).follow(rightLeader);
-    tryUntilOk(
-        rightFollower,
-        5,
-        () ->
-            rightFollower.configure(
-                config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 
   @Override
@@ -93,7 +75,7 @@ public class DriveIOKitbot implements DriveIO {
         (values) -> inputs.leftAppliedVolts = values[0] * values[1]);
     ifOk(
         leftLeader,
-        new DoubleSupplier[] {leftLeader::getOutputCurrent, leftFollower::getOutputCurrent},
+        new DoubleSupplier[] {leftLeader::getOutputCurrent},
         (values) -> inputs.leftCurrentAmps = values);
 
     ifOk(rightLeader, rightEncoder::getPosition, (value) -> inputs.rightPositionRad = value);
@@ -104,7 +86,7 @@ public class DriveIOKitbot implements DriveIO {
         (values) -> inputs.rightAppliedVolts = values[0] * values[1]);
     ifOk(
         rightLeader,
-        new DoubleSupplier[] {rightLeader::getOutputCurrent, rightLeader::getOutputCurrent},
+        new DoubleSupplier[] {rightLeader::getOutputCurrent},
         (values) -> inputs.rightCurrentAmps = values);
   }
 
