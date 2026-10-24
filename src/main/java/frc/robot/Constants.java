@@ -15,6 +15,23 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
+  public static final class KOperator {
+    public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+    public static final boolean kForceDriveGamepad = true;
+  }
+
+  public class KController {
+    public static final SimControllerType kSimControllerType = SimControllerType.XBOX;
+    // or: SimControllerType.DUAL_SENSE, SimControllerType.JOYSTICK, SimControllerType.KEYBOARD;
+
+    public enum SimControllerType {
+      XBOX,
+      DUAL_SENSE,
+      KEYBOARD
+    }
+  }
+
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
