@@ -9,6 +9,8 @@ package frc.robot.util;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
+import edu.wpi.first.util.function.BooleanConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
@@ -51,6 +53,19 @@ public class SparkUtil {
       } else {
         sparkStickyFault = true;
       }
+    }
+  }
+
+  /**
+   * Processes a value from a Spark only if the value is valid.
+   *
+   * <p>(This function hasn't been tested yet. I added it to try looking around the Spark API using
+   * the Spark API)
+   */
+  public static void readBool(SparkBase spark, BooleanSupplier supplier, BooleanConsumer consumer) {
+    boolean value = supplier.getAsBoolean();
+    if (spark.getLastError() == REVLibError.kOk) {
+      consumer.accept(value);
     }
   }
 }

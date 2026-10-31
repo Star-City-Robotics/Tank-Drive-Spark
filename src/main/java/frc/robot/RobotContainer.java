@@ -20,6 +20,10 @@ import frc.robot.subsystems.drive.DriveIOKitbot;
 import frc.robot.subsystems.drive.DriveIOKitbot2026;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.led.LEDSubsystem;
+import frc.robot.subsystems.led.SignalAccelIO;
+import frc.robot.subsystems.led.SignalAccelIORio;
+import frc.robot.subsystems.led.SignalAccelIOSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -31,6 +35,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final LEDSubsystem led;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -40,25 +45,29 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Real robot, instantiate hardware IO implementations
     switch (Constants.currentMode) {
       case KITBOT:
-        // Real robot, instantiate hardware IO implementations
         drive = new Drive(new DriveIOKitbot(), new GyroIO() {});
+        led = new LEDSubsystem(new SignalAccelIORio());
         break;
 
       case KITBOT2026:
         // Real robot, instantiate hardware IO implementations
         drive = new Drive(new DriveIOKitbot2026(), new GyroIO() {});
+        led = new LEDSubsystem(new SignalAccelIOSim());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive = new Drive(new DriveIOSim(), new GyroIO() {});
+        led = new LEDSubsystem(new SignalAccelIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
         drive = new Drive(new DriveIO() {}, new GyroIO() {});
+        led = new LEDSubsystem(new SignalAccelIO() {});
         break;
     }
 
@@ -104,4 +113,13 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
+  // /**
+  //  * Make the LED Subsystem accessible to Robot.java
+  //  *
+  //  * @return
+  //  */
+  // public LEDSubsystem getLEDSubsystem() {
+  //   return led;
+  // }
 }
