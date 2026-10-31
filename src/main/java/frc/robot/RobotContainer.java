@@ -40,7 +40,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
-      case REAL:
+      case KITBOT:
+        // Real robot, instantiate hardware IO implementations
+        drive = new Drive(new DriveIOKitbot(), new GyroIO() {});
+        break;
+
+      case KITBOT2026:
         // Real robot, instantiate hardware IO implementations
         drive = new Drive(new DriveIOKitbot(), new GyroIO() {});
         break;

@@ -16,11 +16,13 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.KITBOT : simMode;
 
   public static enum Mode {
     /** Running on a real robot. */
-    REAL,
+    KITBOT,
+
+    KITBOT2026,
 
     /** Running a physics simulator. */
     SIM,
