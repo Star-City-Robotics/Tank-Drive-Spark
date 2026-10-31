@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveIOKitbot;
 import frc.robot.subsystems.drive.DriveIOSim;
-import frc.robot.subsystems.drive.DriveIOSpark;
 import frc.robot.subsystems.drive.GyroIO;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -42,7 +42,7 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive = new Drive(new DriveIOSpark(), new GyroIO() {});
+        drive = new Drive(new DriveIOKitbot(), new GyroIO() {});
         break;
 
       case SIM:

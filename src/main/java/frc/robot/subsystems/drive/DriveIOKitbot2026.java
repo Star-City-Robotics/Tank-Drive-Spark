@@ -20,6 +20,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import frc.robot.subsystems.drive.DriveConstants.KitBot2026;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -27,17 +28,21 @@ import java.util.function.DoubleSupplier;
  * easily adapted for brushed motors and external encoders. Spark Flexes can be used by swapping all
  * instances of "SparkMax" with "SparkFlex".
  */
-public class DriveIOSpark implements DriveIO {
-  private final SparkMax leftLeader = new SparkMax(leftLeaderCanId, MotorType.kBrushless);
-  private final SparkMax rightLeader = new SparkMax(rightLeaderCanId, MotorType.kBrushless);
-  private final SparkMax leftFollower = new SparkMax(leftFollowerCanId, MotorType.kBrushless);
-  private final SparkMax rightFollower = new SparkMax(rightFollowerCanId, MotorType.kBrushless);
+public class DriveIOKitbot2026 implements DriveIO {
+  private final SparkMax leftLeader =
+      new SparkMax(KitBot2026.leftLeaderCanId, MotorType.kBrushless);
+  private final SparkMax rightLeader =
+      new SparkMax(KitBot2026.rightLeaderCanId, MotorType.kBrushless);
+  private final SparkMax leftFollower =
+      new SparkMax(KitBot2026.leftFollowerCanId, MotorType.kBrushless);
+  private final SparkMax rightFollower =
+      new SparkMax(KitBot2026.rightFollowerCanId, MotorType.kBrushless);
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
   private final SparkClosedLoopController leftController = leftLeader.getClosedLoopController();
   private final SparkClosedLoopController rightController = rightLeader.getClosedLoopController();
 
-  public DriveIOSpark() {
+  public DriveIOKitbot2026() {
     // Create config
     var config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake).smartCurrentLimit(currentLimit).voltageCompensation(12.0);

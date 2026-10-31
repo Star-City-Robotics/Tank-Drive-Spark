@@ -20,6 +20,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import frc.robot.subsystems.drive.DriveConstants.KitBot;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -28,8 +29,9 @@ import java.util.function.DoubleSupplier;
  * instances of "SparkMax" with "SparkFlex".
  */
 public class DriveIOKitbot implements DriveIO {
-  private final SparkMax leftLeader = new SparkMax(leftLeaderCanId, MotorType.kBrushless);
-  private final SparkMax rightLeader = new SparkMax(rightLeaderCanId, MotorType.kBrushless);
+  protected final SparkMax leftLeader = new SparkMax(KitBot.leftLeaderCanId, MotorType.kBrushless);
+  protected final SparkMax rightLeader =
+      new SparkMax(KitBot.rightLeaderCanId, MotorType.kBrushless);
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
   private final SparkClosedLoopController leftController = leftLeader.getClosedLoopController();
