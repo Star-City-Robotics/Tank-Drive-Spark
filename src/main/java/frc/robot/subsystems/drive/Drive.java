@@ -27,6 +27,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.DrivePIDConfig;
+import frc.robot.Constants.KitBot;
+import frc.robot.Constants.KitBot2026;
 import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -39,9 +42,9 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private final DifferentialDriveKinematics kinematics =
-      new DifferentialDriveKinematics(trackWidth);
-  private final double kS = Constants.currentMode == Mode.SIM ? simKs : realKs;
-  private final double kV = Constants.currentMode == Mode.SIM ? simKv : realKv;
+      new DifferentialDriveKinematics(Constants.trackWidth);
+
+  private final DrivePIDConfig pidConfig;
   private final DifferentialDrivePoseEstimator poseEstimator =
       new DifferentialDrivePoseEstimator(kinematics, Rotation2d.kZero, 0.0, 0.0, Pose2d.kZero);
   private final SysIdRoutine sysId;
@@ -53,6 +56,17 @@ public class Drive extends SubsystemBase {
     this.io = io;
     this.gyroIO = gyroIO;
 
+    this.pidConfig =
+        switch (Constants.currentMode) {
+          case KITBOT -> KitBot.pidConfig;
+          case KITBOT2026 -> KitBot2026.pidConfig;
+          case SIM -> KitBot2026.pidConfig;
+            // not a great way to access these configs
+          case REPLAY -> (Constants.robotBuild == Mode.KITBOT
+              ? KitBot.pidConfig
+              : KitBot2026.pidConfig);
+        };
+
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
         this::getPose,
@@ -62,8 +76,8 @@ public class Drive extends SubsystemBase {
                 new DifferentialDriveWheelSpeeds(
                     getLeftVelocityMetersPerSec(), getRightVelocityMetersPerSec())),
         (ChassisSpeeds speeds) -> runClosedLoop(speeds),
-        new PPLTVController(0.02, maxSpeedMetersPerSec),
-        ppConfig,
+        new PPLTVController(0.02, Constants.maxSpeedMetersPerSec),
+        Constants.ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
@@ -127,8 +141,10 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Drive/LeftSetpointRadPerSec", leftRadPerSec);
     Logger.recordOutput("Drive/RightSetpointRadPerSec", rightRadPerSec);
 
-    double leftFFVolts = kS * Math.signum(leftRadPerSec) + kV * leftRadPerSec;
-    double rightFFVolts = kS * Math.signum(rightRadPerSec) + kV * rightRadPerSec;
+    double leftFFVolts =
+        pidConfig.ks() * Math.signum(leftRadPerSec) + pidConfig.kv() * leftRadPerSec;
+    double rightFFVolts =
+        pidConfig.ks() * Math.signum(rightRadPerSec) + pidConfig.kv() * rightRadPerSec;
     io.setVelocity(leftRadPerSec, rightRadPerSec, leftFFVolts, rightFFVolts);
   }
 

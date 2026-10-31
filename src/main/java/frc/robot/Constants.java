@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -15,19 +19,73 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
+  // NOTE: change robotBuild to Mode.KITBOT2026;
+  public static final Mode robotBuild = Mode.KITBOT;
   public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.KITBOT : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? robotBuild : simMode;
+
+  public record DrivePIDConfig(double kp, double kd, double ks, double kv) {}
 
   public static enum Mode {
     /** Running on a real robot. */
     KITBOT,
-
     KITBOT2026,
 
     /** Running a physics simulator. */
     SIM,
 
     /** Replaying from a log file. */
-    REPLAY
+    REPLAY;
   }
+
+  public static final double maxSpeedMetersPerSec = 4.0;
+  public static final double trackWidth = Units.inchesToMeters(26.0);
+
+  public static final int pigeonCanId = 9;
+
+  public static final class KitBot {
+    public static final int leftLeaderCanId = 20;
+    public static final int rightLeaderCanId = 10;
+    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.0, 0.0, 0.0, 0.1);
+  }
+
+  public static final class KitBot2026 {
+    public static final int leftLeaderCanId = 1;
+    public static final int leftFollowerCanId = 2;
+    public static final int rightLeaderCanId = 3;
+    public static final int rightFollowerCanId = 4;
+    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.0, 0.0, 0.0, 0.1);
+  }
+
+  public static final class Sim {
+    public static final int leftLeaderCanId = 1;
+    public static final int leftFollowerCanId = 2;
+    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.05, 0.0, 0.0, 0.227);
+  }
+
+  // TODO: refactor motor configuration?
+  public static final int currentLimit = 60;
+  public static final double wheelRadiusMeters = Units.inchesToMeters(3.0);
+  public static final double motorReduction = 10.71;
+  public static final boolean leftInverted = false;
+  public static final boolean rightInverted = true;
+  public static final DCMotor gearbox = DCMotor.getCIM(2);
+
+  // TODO: refactor PathPlanner configuration?
+  // TODO: tune pathplanner
+  public static final double robotMassKg = 74.088;
+  public static final double robotMOI = 6.883;
+  public static final double wheelCOF = 1.2;
+  public static final RobotConfig ppConfig =
+      new RobotConfig(
+          robotMassKg,
+          robotMOI,
+          new ModuleConfig(
+              wheelRadiusMeters,
+              maxSpeedMetersPerSec,
+              wheelCOF,
+              gearbox.withReduction(motorReduction),
+              currentLimit,
+              2),
+          trackWidth);
 }

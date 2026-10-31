@@ -17,6 +17,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOKitbot;
+import frc.robot.subsystems.drive.DriveIOKitbot2026;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.GyroIO;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -47,7 +48,7 @@ public class RobotContainer {
 
       case KITBOT2026:
         // Real robot, instantiate hardware IO implementations
-        drive = new Drive(new DriveIOKitbot(), new GyroIO() {});
+        drive = new Drive(new DriveIOKitbot2026(), new GyroIO() {});
         break;
 
       case SIM:
