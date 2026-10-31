@@ -7,7 +7,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,6 +17,12 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 
 public class DriveIOSim implements DriveIO {
+
+  public final double kP = 0.05;
+  public final double kD = 0.0;
+  public final double kS = 0.0;
+  public final double kV = 0.227;
+
   private DifferentialDrivetrainSim sim =
       DifferentialDrivetrainSim.createKitbotSim(
           KitbotMotor.kDualCIMPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null);
@@ -24,8 +30,8 @@ public class DriveIOSim implements DriveIO {
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
   private boolean closedLoop = false;
-  private PIDController leftPID = new PIDController(simKp, 0.0, simKd);
-  private PIDController rightPID = new PIDController(simKp, 0.0, simKd);
+  private PIDController leftPID = new PIDController(kP, 0.0, kD);
+  private PIDController rightPID = new PIDController(kP, 0.0, kD);
   private double leftFFVolts = 0.0;
   private double rightFFVolts = 0.0;
 
@@ -71,5 +77,15 @@ public class DriveIOSim implements DriveIO {
     this.rightFFVolts = rightFFVolts;
     leftPID.setSetpoint(leftRadPerSec);
     rightPID.setSetpoint(rightRadPerSec);
+  }
+
+  @Override
+  public double getKs() {
+    return kS;
+  }
+
+  @Override
+  public double getKv() {
+    return kV;
   }
 }

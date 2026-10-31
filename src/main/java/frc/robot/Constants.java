@@ -24,8 +24,6 @@ public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? robotBuild : simMode;
 
-  public record DrivePIDConfig(double kp, double kd, double ks, double kv) {}
-
   public static enum Mode {
     /** Running on a real robot. */
     KITBOT,
@@ -43,32 +41,10 @@ public final class Constants {
 
   public static final int pigeonCanId = 9;
 
-  public static final class KitBot {
-    public static final int leftLeaderCanId = 20;
-    public static final int rightLeaderCanId = 10;
-    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.0, 0.0, 0.0, 0.1);
-  }
-
-  public static final class KitBot2026 {
-    public static final int leftLeaderCanId = 1;
-    public static final int leftFollowerCanId = 2;
-    public static final int rightLeaderCanId = 3;
-    public static final int rightFollowerCanId = 4;
-    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.0, 0.0, 0.0, 0.1);
-  }
-
-  public static final class Sim {
-    public static final int leftLeaderCanId = 1;
-    public static final int leftFollowerCanId = 2;
-    public static final DrivePIDConfig pidConfig = new DrivePIDConfig(0.05, 0.0, 0.0, 0.227);
-  }
-
   // TODO: refactor motor configuration?
   public static final int currentLimit = 60;
   public static final double wheelRadiusMeters = Units.inchesToMeters(3.0);
   public static final double motorReduction = 10.71;
-  public static final boolean leftInverted = false;
-  public static final boolean rightInverted = true;
   public static final DCMotor gearbox = DCMotor.getCIM(2);
 
   // TODO: refactor PathPlanner configuration?

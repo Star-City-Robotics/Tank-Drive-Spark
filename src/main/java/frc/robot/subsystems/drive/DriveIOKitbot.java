@@ -7,7 +7,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.Constants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.PersistMode;
@@ -20,7 +20,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.Constants.KitBot;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -29,9 +28,19 @@ import java.util.function.DoubleSupplier;
  * instances of "SparkMax" with "SparkFlex".
  */
 public class DriveIOKitbot implements DriveIO {
-  protected final SparkMax leftLeader = new SparkMax(KitBot.leftLeaderCanId, MotorType.kBrushless);
-  protected final SparkMax rightLeader =
-      new SparkMax(KitBot.rightLeaderCanId, MotorType.kBrushless);
+
+  public static final int leftLeaderCanId = 20;
+  public static final int rightLeaderCanId = 10;
+  public static final boolean leftInverted = false;
+  public static final boolean rightInverted = true;
+
+  public final double kP = 0.0;
+  public final double kD = 0.0;
+  public final double kS = 0.0;
+  public final double kV = 0.1;
+
+  protected final SparkMax leftLeader = new SparkMax(leftLeaderCanId, MotorType.kBrushless);
+  protected final SparkMax rightLeader = new SparkMax(rightLeaderCanId, MotorType.kBrushless);
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
   private final SparkClosedLoopController leftController = leftLeader.getClosedLoopController();
@@ -41,7 +50,7 @@ public class DriveIOKitbot implements DriveIO {
     // Create config
     var config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake).smartCurrentLimit(currentLimit).voltageCompensation(12.0);
-    config.closedLoop.pid(realKp, 0.0, realKd);
+    config.closedLoop.pid(kP, 0.0, kD);
     config
         .encoder
         .positionConversionFactor(2 * Math.PI / motorReduction) // Rotor Rotations -> Wheel Radians
@@ -105,5 +114,15 @@ public class DriveIOKitbot implements DriveIO {
         leftRadPerSec, ControlType.kVelocity, ClosedLoopSlot.kSlot0, leftFFVolts);
     rightController.setSetpoint(
         rightRadPerSec, ControlType.kVelocity, ClosedLoopSlot.kSlot0, rightFFVolts);
+  }
+
+  @Override
+  public double getKs() {
+    return kS;
+  }
+
+  @Override
+  public double getKv() {
+    return kV;
   }
 }

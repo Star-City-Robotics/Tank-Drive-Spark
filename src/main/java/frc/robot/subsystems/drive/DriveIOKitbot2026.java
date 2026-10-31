@@ -7,7 +7,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.Constants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.PersistMode;
@@ -20,7 +20,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.subsystems.drive.DriveConstants.KitBot2026;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -29,24 +28,34 @@ import java.util.function.DoubleSupplier;
  * instances of "SparkMax" with "SparkFlex".
  */
 public class DriveIOKitbot2026 implements DriveIO {
-  private final SparkMax leftLeader =
-      new SparkMax(KitBot2026.leftLeaderCanId, MotorType.kBrushless);
-  private final SparkMax rightLeader =
-      new SparkMax(KitBot2026.rightLeaderCanId, MotorType.kBrushless);
-  private final SparkMax leftFollower =
-      new SparkMax(KitBot2026.leftFollowerCanId, MotorType.kBrushless);
-  private final SparkMax rightFollower =
-      new SparkMax(KitBot2026.rightFollowerCanId, MotorType.kBrushless);
+  public static final int leftLeaderCanId = 1;
+  public static final int leftFollowerCanId = 2;
+  public static final int rightLeaderCanId = 3;
+  public static final int rightFollowerCanId = 4;
+
+  public static final boolean leftInverted = false;
+  public static final boolean rightInverted = true;
+
+  public final double kP = 0.0;
+  public final double kD = 0.0;
+  public final double kS = 0.0;
+  public final double kV = 0.1;
+
+  private final SparkMax leftLeader = new SparkMax(leftLeaderCanId, MotorType.kBrushless);
+  private final SparkMax rightLeader = new SparkMax(rightLeaderCanId, MotorType.kBrushless);
+  private final SparkMax leftFollower = new SparkMax(leftFollowerCanId, MotorType.kBrushless);
+  private final SparkMax rightFollower = new SparkMax(rightFollowerCanId, MotorType.kBrushless);
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
   private final SparkClosedLoopController leftController = leftLeader.getClosedLoopController();
   private final SparkClosedLoopController rightController = rightLeader.getClosedLoopController();
 
   public DriveIOKitbot2026() {
+
     // Create config
     var config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake).smartCurrentLimit(currentLimit).voltageCompensation(12.0);
-    config.closedLoop.pid(realKp, 0.0, realKd);
+    config.closedLoop.pid(kP, 0.0, kD);
     config
         .encoder
         .positionConversionFactor(2 * Math.PI / motorReduction) // Rotor Rotations -> Wheel Radians
@@ -126,5 +135,15 @@ public class DriveIOKitbot2026 implements DriveIO {
         leftRadPerSec, ControlType.kVelocity, ClosedLoopSlot.kSlot0, leftFFVolts);
     rightController.setSetpoint(
         rightRadPerSec, ControlType.kVelocity, ClosedLoopSlot.kSlot0, rightFFVolts);
+  }
+
+  @Override
+  public double getKs() {
+    return kS;
+  }
+
+  @Override
+  public double getKv() {
+    return kV;
   }
 }

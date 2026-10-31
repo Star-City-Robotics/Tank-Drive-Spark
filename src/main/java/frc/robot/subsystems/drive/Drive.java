@@ -8,7 +8,7 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPLTVController;
@@ -27,10 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Constants.DrivePIDConfig;
-import frc.robot.Constants.KitBot;
-import frc.robot.Constants.KitBot2026;
-import frc.robot.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -44,7 +40,6 @@ public class Drive extends SubsystemBase {
   private final DifferentialDriveKinematics kinematics =
       new DifferentialDriveKinematics(Constants.trackWidth);
 
-  private final DrivePIDConfig pidConfig;
   private final DifferentialDrivePoseEstimator poseEstimator =
       new DifferentialDrivePoseEstimator(kinematics, Rotation2d.kZero, 0.0, 0.0, Pose2d.kZero);
   private final SysIdRoutine sysId;
@@ -55,17 +50,6 @@ public class Drive extends SubsystemBase {
   public Drive(DriveIO io, GyroIO gyroIO) {
     this.io = io;
     this.gyroIO = gyroIO;
-
-    this.pidConfig =
-        switch (Constants.currentMode) {
-          case KITBOT -> KitBot.pidConfig;
-          case KITBOT2026 -> KitBot2026.pidConfig;
-          case SIM -> KitBot2026.pidConfig;
-            // not a great way to access these configs
-          case REPLAY -> (Constants.robotBuild == Mode.KITBOT
-              ? KitBot.pidConfig
-              : KitBot2026.pidConfig);
-        };
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
@@ -141,10 +125,8 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Drive/LeftSetpointRadPerSec", leftRadPerSec);
     Logger.recordOutput("Drive/RightSetpointRadPerSec", rightRadPerSec);
 
-    double leftFFVolts =
-        pidConfig.ks() * Math.signum(leftRadPerSec) + pidConfig.kv() * leftRadPerSec;
-    double rightFFVolts =
-        pidConfig.ks() * Math.signum(rightRadPerSec) + pidConfig.kv() * rightRadPerSec;
+    double leftFFVolts = getKs() * Math.signum(leftRadPerSec) + getKv() * leftRadPerSec;
+    double rightFFVolts = getKs() * Math.signum(rightRadPerSec) + getKv() * rightRadPerSec;
     io.setVelocity(leftRadPerSec, rightRadPerSec, leftFFVolts, rightFFVolts);
   }
 
@@ -223,4 +205,19 @@ public class Drive extends SubsystemBase {
   public double getCharacterizationVelocity() {
     return (inputs.leftVelocityRadPerSec + inputs.rightVelocityRadPerSec) / 2.0;
   }
+
+  /**
+   * @return the kS defined on the DriveIO without accessing it
+   */
+  public double getKs() {
+    return this.io.getKs();
+  }
+
+  /**
+   * @return the kV defined on the DriveIO without accessing it
+   */
+  public double getKv() {
+    return this.io.getKv();
+  }
+
 }
